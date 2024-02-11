@@ -5,15 +5,12 @@ const server = http.createServer((req, res) => {
   // Set the response header
   res.setHeader('Content-Type', 'application/json');
 
-  // Manual parsing of URL and query parameters.
-  // URL constructor directly, which is a global Node.js API
-  const reqUrl = new URL(req.url, `http://${req.headers.host}`);
+  // Extract the ID from the URL path
+  const path = req.url.split('/'); // Split the URL path by '/'
+  const id = path.length > 2 ? path[2] : null; // The ID is expected to be the third segment
 
-  // Check for the route, method, and query parameters
-  if (reqUrl.pathname === '/subscription' && req.method === 'GET') {
-    const id = reqUrl.searchParams.get('id'); // Extract 'id' query parameter
+  if (path[1] === 'subscription' && req.method === 'GET' && id) {
     const subscription = subscriptions.find((sub) => sub.id.toString() === id);
-
     if (subscription) {
       res.writeHead(200); // HTTP status code 200: OK
       res.end(JSON.stringify(subscription));
@@ -22,7 +19,7 @@ const server = http.createServer((req, res) => {
       res.end(JSON.stringify({ message: 'Subscription not found' }));
     }
   } else {
-    // Handle not found
+    // Handle not found or incorrect path
     res.writeHead(404); // HTTP status code 404: Not Found
     res.end(JSON.stringify({ message: 'Resource not found' }));
   }
