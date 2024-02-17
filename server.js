@@ -1,53 +1,82 @@
 import http from 'http';
+import fs from 'fs';
 import { subscriptions } from './data.js';
 
 const server = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-
-  // Handling GET request to fetch a subscription by ID
-  if (req.url.startsWith('/subscription/') && req.method === 'GET') {
-    const id = req.url.split('/')[2];
-    const subscription = subscriptions.find((sub) => sub.id.toString() === id);
-    if (subscription) {
-      res.writeHead(200);
-      res.end(JSON.stringify(subscription));
-    } else {
-      res.writeHead(404);
-      res.end(JSON.stringify({ message: 'Subscription not found' }));
-    }
-  }
-
-  // Handling POST request to add a new subscription
-  else if (req.url === '/subscription' && req.method === 'POST') {
-    let chunks = []; // Use an array to collect data chunks
-
-    req.on('data', (chunk) => {
-      chunks.push(chunk); // Push the chunk into the array
-    });
-
-    req.on('end', () => {
-      let body = Buffer.concat(chunks).toString(); // Combine all chunks and convert to string
-      const newSubscription = JSON.parse(body); // Parse the JSON string
-      newSubscription.id = subscriptions.length + 1; // Assign a new ID; simplistic approach!
-      subscriptions.push(newSubscription); // Add the new subscription to the array
-
-      res.writeHead(201);
-      res.end(JSON.stringify(newSubscription));
-    });
-  } else {
-    // Handle not found or incorrect method
-    res.writeHead(404);
-    res.end(JSON.stringify({ message: 'Resource not found' }));
+  // Determine the action based on URL and method using switch-case
+  switch (true) {
+    case req.url.startsWith('/subscription/') && req.method === 'GET':
+      handleGetSubscription(req, res);
+      break;
+    case req.url === '/subscription' && req.method === 'POST':
+      handlePostSubscription(req, res);
+      break;
+    case req.url === '/' && req.method === 'GET':
+      serveIndexHtml(res);
+      break;
+    case req.url === '/script.js' && req.method === 'GET':
+      serveScriptJs(res);
+      break;
+    default:
+      // Handle not found or incorrect method
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: 'Resource not found' }));
   }
 });
+
+const handleGetSubscription = (req, res) => {
+  const id = req.url.split('/')[2];
+  const subscription = subscriptions.find((sub) => sub.id.toString() === id);
+  res.setHeader('Content-Type', 'application/json');
+  if (subscription) {
+    res.writeHead(200);
+    res.end(JSON.stringify(subscription));
+  } else {
+    res.writeHead(404);
+    res.end(JSON.stringify({ message: 'Subscription not found' }));
+  }
+};
+
+const handlePostSubscription = (req, res) => {
+  let chunks = [];
+  req.on('data', (chunk) => {
+    chunks.push(chunk);
+  });
+  req.on('end', () => {
+    let body = Buffer.concat(chunks).toString();
+    const newSubscription = JSON.parse(body);
+    newSubscription.id = subscriptions.length + 1;
+    subscriptions.push(newSubscription);
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(newSubscription));
+  });
+};
+
+const serveIndexHtml = (res) => {
+  fs.readFile('index.html', (err, data) => {
+    if (err) {
+      res.writeHead(500);
+      res.end('Error loading index.html');
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(data);
+  });
+};
+
+const serveScriptJs = (res) => {
+  fs.readFile('script.js', (err, data) => {
+    if (err) {
+      res.writeHead(404);
+      res.end('script.js not found');
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/javascript' });
+    res.end(data);
+  });
+};
 
 const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-/*
-When a POST request (or any request with a body) is sent to a Node.js server, the data isn't received all at once. 
-Instead, it arrives in pieces or "chunks". This is due to the way data is transmitted over networks, in packets, 
-to efficiently use bandwidth and ensure data integrity, especially when dealing with large amounts of data. 
-*/
