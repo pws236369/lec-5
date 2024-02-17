@@ -19,11 +19,14 @@ const server = http.createServer((req, res) => {
 
   // Handling POST request to add a new subscription
   else if (req.url === '/subscription' && req.method === 'POST') {
-    let body = '';
+    let chunks = []; // Use an array to collect data chunks
+
     req.on('data', (chunk) => {
-      body += chunk.toString(); // Convert Buffer to string
+      chunks.push(chunk); // Push the chunk into the array
     });
+
     req.on('end', () => {
+      let body = Buffer.concat(chunks).toString(); // Combine all chunks and convert to string
       const newSubscription = JSON.parse(body); // Parse the JSON string
       newSubscription.id = subscriptions.length + 1; // Assign a new ID; simplistic approach!
       subscriptions.push(newSubscription); // Add the new subscription to the array
