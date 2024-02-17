@@ -7,4 +7,13 @@ const adiSubscription = {
   paymentToken: '123-456-789',
 };
 
-export const subscriptions = [adiSubscription, adiSubscription];
+const nisosSub = {
+  id: 2,
+  name: 'Nisso go to run',
+  cycle: 'Monthly',
+  customerName: 'Adi Harif 🦈',
+  type: 'Green 💚',
+  paymentToken: '123-456-789',
+};
+
+export const subscriptions = [adiSubscription, nisosSub];
