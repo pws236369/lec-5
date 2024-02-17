@@ -59,7 +59,11 @@ const serveIndexHtml = (res) => {
       res.end('Error loading index.html');
       return;
     }
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    // Set the 'titleColor' cookie to 'green' with a HTTP response header
+    res.writeHead(200, {
+      'Content-Type': 'text/html',
+      'Set-Cookie': 'titleColor=green; path=/; max-age=86400', // Expires in 1 day
+    });
     res.end(data);
   });
 };
