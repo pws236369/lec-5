@@ -10,11 +10,47 @@ document.addEventListener('DOMContentLoaded', () => {
   document
     .getElementById('colorRed')
     .addEventListener('change', changeTitleColor);
+
+  // Set the title color from the cookie when the page loads
+  setTitleColorFromCookie();
 });
 
 function changeTitleColor(event) {
+  const color = event.target.value;
   const pageTitle = document.getElementById('pageTitle');
-  pageTitle.style.color = event.target.value;
+  pageTitle.style.color = color;
+  // Save the selected color in a cookie
+  setCookie('titleColor', color, 7); // Expires in 7 days
+}
+
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+  let expires = 'expires=' + d.toUTCString();
+  document.cookie = name + '=' + value + ';' + expires + ';path=/';
+}
+
+function getCookie(name) {
+  let nameEQ = name + '=';
+  let ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+function setTitleColorFromCookie() {
+  const color = getCookie('titleColor');
+  if (color) {
+    const pageTitle = document.getElementById('pageTitle');
+    pageTitle.style.color = color;
+    // Check the corresponding radio button based on the cookie
+    document.getElementById(
+      `color${color.charAt(0).toUpperCase() + color.slice(1)}`
+    ).checked = true;
+  }
 }
 
 async function getSubscription() {
