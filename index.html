@@ -5,13 +5,18 @@
     <title>My Gym Subscriptions</title>
   </head>
   <body>
-    <h1>My Gym Subscriptions</h1>
+    <h1 id="pageTitle">My Gym Subscriptions</h1>
+    <div>
+      <input type="radio" id="colorGreen" name="titleColor" value="green" />
+      <label for="colorGreen">Green</label>
+      <input type="radio" id="colorRed" name="titleColor" value="red" />
+      <label for="colorRed">Red</label>
+    </div>
     <input
       type="text"
       id="subscriptionId"
       placeholder="Enter Subscription ID"
     />
-
     <button id="getSubscriptionButton">Get Subscription</button>
     <div id="subscriptionDetails"></div>
     <script type="text/javascript" src="script.js"></script>

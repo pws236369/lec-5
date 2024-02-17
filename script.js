@@ -2,7 +2,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   const button = document.getElementById('getSubscriptionButton');
   button.addEventListener('click', getSubscription);
+
+  // Event listeners for radio buttons
+  document
+    .getElementById('colorGreen')
+    .addEventListener('change', changeTitleColor);
+  document
+    .getElementById('colorRed')
+    .addEventListener('change', changeTitleColor);
 });
+
+function changeTitleColor(event) {
+  const pageTitle = document.getElementById('pageTitle');
+  pageTitle.style.color = event.target.value;
+}
 
 async function getSubscription() {
   const id = document.getElementById('subscriptionId').value;
