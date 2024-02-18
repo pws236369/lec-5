@@ -6,6 +6,7 @@ const server = http.createServer((req, res) => {
   // Determine the action based on URL and method using switch-case
   switch (true) {
     case req.url.startsWith('/subscription/') && req.method === 'GET':
+      console.log('>>>', req.headers.cookie);
       handleGetSubscription(req, res);
       break;
     case req.url === '/subscription' && req.method === 'POST':
@@ -59,11 +60,17 @@ const serveIndexHtml = (res) => {
       res.end('Error loading index.html');
       return;
     }
-    // Set the 'titleColor' cookie to 'green' with a HTTP response header
-    res.writeHead(200, {
-      'Content-Type': 'text/html',
-      'Set-Cookie': 'titleColor=green; path=/; max-age=86400', // Expires in 1 day
-    });
+    res.statusCode = 200;
+    res.setHeader('Set-Cookie', [
+      'titleColor=green; path=/; max-age=86400', // Expires in 1 day
+      'userPreference=darkMode; path=/; max-age=432000', // Another example cookie
+    ]);
+    res.setHeader(
+      'Set-Cookie',
+      'id=abc123; Domain=localhost; Path=/; HttpOnly'
+    );
+    res.setHeader('Set-Cookie', 'yo=abc123; secure; Path=/; HttpOnly');
+
     res.end(data);
   });
 };
