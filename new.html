@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Trainer App</title>
+    <script>
+      async function fetchSubscription() {
+        try {
+          const response = await fetch('http://localhost:3000/subscription/1', {
+            method: 'GET',
+          });
+          if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(data);
+          document.getElementById('subscription-details').textContent =
+            JSON.stringify(data, null, 2);
+        } catch (error) {
+          console.error('Error fetching subscription:', error);
+          document.getElementById('subscription-details').textContent =
+            'Failed to fetch subscription.';
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Trainer App</h1>
+    <button onclick="fetchSubscription()">Fetch Subscription</button>
+    <pre id="subscription-details"></pre>
+  </body>
+</html>
