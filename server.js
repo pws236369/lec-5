@@ -30,7 +30,11 @@ const handleGetSubscription = (req, res) => {
   const subscription = subscriptions.find((sub) => sub.id.toString() === id);
   res.setHeader('Content-Type', 'application/json');
   if (subscription) {
+    res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500'); // Only allow this origin
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     res.writeHead(200);
+
     res.end(JSON.stringify(subscription));
   } else {
     res.writeHead(404);
